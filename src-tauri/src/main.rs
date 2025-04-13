@@ -97,8 +97,8 @@ fn generate_ssh_key(email: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
     let ssh_dir = get_ssh_dir();
     fs::create_dir_all(&ssh_dir).map_err(|e| e.to_string())?;
 
-    let private_key_path = ssh_dir.join("id_ed25519_git_account_switcher");
-    let public_key_path = ssh_dir.join("id_ed25519_git_account_switcher.pub");
+    let private_key_path = ssh_dir.join("id_ed25519");
+    let public_key_path = ssh_dir.join("id_ed25519.pub");
 
     // Remove existing keys
     fs::remove_file(&private_key_path).ok();
@@ -160,10 +160,10 @@ fn set_active_ssh_key(email: &str) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     let ssh_dir = get_ssh_dir();
-    fs::write(ssh_dir.join("id_ed25519_git_account_switcher"), private_key)
+    fs::write(ssh_dir.join("id_ed25519"), private_key)
         .map_err(|e| e.to_string())?;
     fs::write(
-        ssh_dir.join("id_ed25519_git_account_switcher.pub"),
+        ssh_dir.join("id_ed25519.pub"),
         public_key,
     )
     .map_err(|e| e.to_string())?;
@@ -273,8 +273,8 @@ async fn remove_account(email: String, window: tauri::Window) -> Result<(), Stri
         run_git_command(&["config", "--global", "--unset", "user.email"])?;
 
         let ssh_dir = get_ssh_dir();
-        fs::remove_file(ssh_dir.join("id_ed25519_git_account_switcher")).ok();
-        fs::remove_file(ssh_dir.join("id_ed25519_git_account_switcher.pub")).ok();
+        fs::remove_file(ssh_dir.join("id_ed25519")).ok();
+        fs::remove_file(ssh_dir.join("id_ed25519.pub")).ok();
     }
 
     // Emit an event to update the UI
@@ -342,8 +342,8 @@ async fn remove_all_accounts(window: tauri::Window) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     let ssh_dir = get_ssh_dir();
-    fs::remove_file(ssh_dir.join("id_ed25519_git_account_switcher")).ok();
-    fs::remove_file(ssh_dir.join("id_ed25519_git_account_switcher.pub")).ok();
+    fs::remove_file(ssh_dir.join("id_ed25519")).ok();
+    fs::remove_file(ssh_dir.join("id_ed25519.pub")).ok();
 
     run_git_command(&["config", "--global", "--unset", "user.name"])?;
     run_git_command(&["config", "--global", "--unset", "user.email"])?;
